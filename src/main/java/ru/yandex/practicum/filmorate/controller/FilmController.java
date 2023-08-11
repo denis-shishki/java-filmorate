@@ -41,11 +41,12 @@ public class FilmController {
     @PutMapping
     public Film updateFilm(@RequestBody Film film) throws Exception {
         log.info("Получен запрос PUT /films.");
-        if (!films.containsKey(film.getId())){
+        if (films.containsKey(film.getId())) {
+            FilmValidator.validate(film);
+            films.put(film.getId(), film);
+            return film;
+        } else {
             throw new FilmNotFoundException("Фильма с данным идентификатором нет в базе");
         }
-        FilmValidator.validate(film);
-        films.put(film.getId(), film);
-        return film;
     }
 }
