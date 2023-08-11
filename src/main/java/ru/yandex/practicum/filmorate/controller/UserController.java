@@ -42,26 +42,12 @@ public class UserController {
     @PutMapping
     public User updateUser(@RequestBody User user) throws Exception {
         log.info("Получен запрос PUT /users.");
-        if (!users.containsKey(user.getId())){
+        if (users.containsKey(user.getId())) {
+            UserValidator.validate(user);
+            users.put(user.getId(), user);
+            return user;
+        } else {
             throw new UserNotFoundException("Пользователь с таким идентификатором не найден.");
         }
-        UserValidator.validate(user);
-        users.put(user.getId(), user);
-        return user;
     }
-
-//    private void checkValidationUser(User user) throws ValidationException {
-//        if (user.getName() == null || user.getName().isBlank()) {
-//            user.setName(user.getLogin());
-//        }
-//        if ((user.getId() == 0 || users.containsKey(user.getId())) //если у пользователя есть id, проверяем его наличие в мапе
-//                && (!user.getEmail().isBlank() && user.getEmail().contains("@"))
-//                && (!user.getLogin().isBlank() && !user.getLogin().contains(" "))
-//                && user.getBirthday().isBefore(LocalDate.now())) {
-//            return;
-//        } else {
-//            log.warn("Некорректнный ввод данных");
-//            throw new ValidationException("Некорректный ввод данных");
-//        }
-//    }
 }
