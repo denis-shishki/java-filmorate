@@ -21,43 +21,43 @@ class UserValidatorTest {
     }
 
     @Test
-    void userFailLogin (){
+    void userFailLogin() {
         User user = User.builder()
                 .login("dol ore")
                 .name("Nick Name")
                 .email("mail@mail.ru")
                 .birthday(LocalDate.of(1946, 8, 20))
                 .build();
-        ValidationException exception = assertThrows(ValidationException.class, () ->UserValidator.validate(user));
+        ValidationException exception = assertThrows(ValidationException.class, () -> UserValidator.validate(user));
         assertEquals("Логин не может быть пустым и содержать пробелов.", exception.getMessage());
     }
 
     @Test
-    void userFailEmail (){
+    void userFailEmail() {
         User user = User.builder()
                 .login("dolore")
                 .name("Nick Name")
                 .email("maiil.ru")
                 .birthday(LocalDate.of(1946, 8, 20))
                 .build();
-        ValidationException exception = assertThrows(ValidationException.class, () ->UserValidator.validate(user));
+        ValidationException exception = assertThrows(ValidationException.class, () -> UserValidator.validate(user));
         assertEquals("Введен некорректный email.", exception.getMessage());
     }
 
     @Test
-    void userFailBirthday (){
+    void userFailBirthday() {
         User user = User.builder()
                 .login("dolore")
                 .name("Nick Name")
                 .email("mail@mail.ru")
                 .birthday(LocalDate.of(3946, 8, 20))
                 .build();
-        ValidationException exception = assertThrows(ValidationException.class, () ->UserValidator.validate(user));
+        ValidationException exception = assertThrows(ValidationException.class, () -> UserValidator.validate(user));
         assertEquals("Дата рождения не может быть в будущем.", exception.getMessage());
     }
 
     @Test
-    void userWithEmptyName (){
+    void userWithEmptyName() {
         User user = User.builder()
                 .login("dolore")
                 .email("mail@mail.ru")
