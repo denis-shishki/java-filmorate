@@ -14,4 +14,3 @@ public class Film {
     protected final LocalDate releaseDate;
     protected final int duration;
 }
-//toString
