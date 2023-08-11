@@ -12,7 +12,7 @@ public class UserValidator {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        if (user.getEmail() == null ||user.getEmail().isBlank() || !user.getEmail().contains("@")) {
+        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
             log.warn("Некорректный ввод данных");
             throw new ValidationException("Введен некорректный email.");
         } else if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {

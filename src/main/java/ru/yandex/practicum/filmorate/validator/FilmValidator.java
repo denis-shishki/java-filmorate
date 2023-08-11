@@ -11,10 +11,10 @@ public class FilmValidator {
     private static final LocalDate MOVIE_BIRTHDAY = LocalDate.of(1895, 12, 28);
 
     public static void validate(Film film) throws ValidationException {
-        if (film.getName() == null || film.getName().isBlank()){
+        if (film.getName() == null || film.getName().isBlank()) {
             log.warn("Некорректный ввод данных");
             throw new ValidationException("Имя не может быть пустым.");
-        } else if (film.getDescription().length() >= 200){
+        } else if (film.getDescription().length() >= 200) {
             log.warn("Некорректный ввод данных");
             throw new ValidationException("Описание не должн превышать 200 символов.");
         } else if (film.getReleaseDate().isBefore(MOVIE_BIRTHDAY)) {
