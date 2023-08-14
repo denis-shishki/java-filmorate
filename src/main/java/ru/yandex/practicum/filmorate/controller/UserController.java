@@ -15,6 +15,7 @@ import java.util.List;
 @RestController()
 @RequestMapping("/users")
 public class UserController {
+    private UserValidator userValidator;
     private final HashMap<Integer, User> users = new HashMap<>();
     private int nextId = 1;
 
@@ -27,7 +28,7 @@ public class UserController {
     @PostMapping()
     public User createUser(@RequestBody User user) throws ValidationException /*throws UserAlreadyExistException, InvalidEmailException*/ {
         log.info("Получен запрос POST /users.");
-        UserValidator.validate(user);
+        userValidator.validate(user);
         User newUser = User.builder()
                 .id(nextId++)
                 .email(user.getEmail())
@@ -43,7 +44,7 @@ public class UserController {
     public User updateUser(@RequestBody User user) throws Exception {
         log.info("Получен запрос PUT /users.");
         if (users.containsKey(user.getId())) {
-            UserValidator.validate(user);
+            userValidator.validate(user);
             users.put(user.getId(), user);
             return user;
         } else {
