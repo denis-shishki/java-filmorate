@@ -14,7 +14,6 @@ import java.util.List;
 @RestController()
 @RequestMapping("/films")
 public class FilmController {
-    private FilmValidator filmValidator;
     private final HashMap<Integer, Film> films = new HashMap<>();
     private int nextId = 1;
 
@@ -27,7 +26,7 @@ public class FilmController {
     @PostMapping
     public Film createFilm(@RequestBody Film film) throws Exception {
         log.info("Получен запрос POST /films.");
-        filmValidator.validate(film);
+        FilmValidator.validate(film);
         Film newFilm = Film.builder()
                 .id(nextId++)
                 .name(film.getName())
@@ -43,7 +42,7 @@ public class FilmController {
     public Film updateFilm(@RequestBody Film film) throws Exception {
         log.info("Получен запрос PUT /films.");
         if (films.containsKey(film.getId())) {
-            filmValidator.validate(film);
+            FilmValidator.validate(film);
             films.put(film.getId(), film);
             return film;
         } else {

@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Slf4j
 @Component
 public class UserValidator {
-    public void validate(User user) throws ValidationException {
+    public static void validate(User user) throws ValidationException {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }

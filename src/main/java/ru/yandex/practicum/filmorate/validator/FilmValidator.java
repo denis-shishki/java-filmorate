@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class FilmValidator {
     private static final LocalDate MOVIE_BIRTHDAY = LocalDate.of(1895, 12, 28);
 
-    public void validate(Film film) throws ValidationException {
+    public static void validate(Film film) throws ValidationException {
         if (film.getName() == null || film.getName().isBlank()) {
             log.warn("Некорректный ввод данных");
             throw new ValidationException("Имя не может быть пустым.");
