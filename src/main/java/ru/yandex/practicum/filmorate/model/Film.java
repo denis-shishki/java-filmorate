@@ -4,12 +4,12 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
 public class Film {
-    protected HashSet<Integer> idsUsersLike;
+    protected Set<Integer> idsUsersLike;
     protected final int id;
     protected final String name;
     protected final String description;

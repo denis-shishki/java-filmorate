@@ -1,9 +1,8 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -18,7 +17,6 @@ public class UserController {
     private final UserStorage userStorage;
     private final UserService userService;
 
-    @Autowired
     public UserController(UserStorage userStorage, UserService userService) {
         this.userStorage = userStorage;
         this.userService = userService;
@@ -31,7 +29,7 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public User findUserById(@PathVariable int id) throws UserNotFoundException {
+    public User findUserById(@PathVariable int id) throws NotFoundException {
         log.info("Получен запрос GET /users/{id}.");
         return userService.getUserById(id);
     }
@@ -49,14 +47,14 @@ public class UserController {
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public User addFriend(@PathVariable int id, @PathVariable int friendId) throws Exception {
+    public User addFriend(@PathVariable int id, @PathVariable int friendId) throws NotFoundException {
         log.info("Получен запрос PUT /users{id}/friends/{friendId}.");
 
         return userService.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public User deleteFriend(@PathVariable int id, @PathVariable int friendId) throws Exception {
+    public User deleteFriend(@PathVariable int id, @PathVariable int friendId) throws NotFoundException {
         log.info("Получен запрос DELETE /users{id}/friends/{friendId}.");
 
         return userService.deleteFriend(id, friendId);
@@ -64,7 +62,7 @@ public class UserController {
 
     @RequestMapping("{id}/friends")
     @GetMapping
-    public List<User> findFriends(@PathVariable int id) throws Exception {
+    public List<User> findFriends(@PathVariable int id) throws NotFoundException {
         log.info("Получен запрос GET /users{id}/friends.");
 
         return userService.getAllFriends(id);
@@ -72,7 +70,7 @@ public class UserController {
 
     @RequestMapping("{id}/friends/common/{otherId}")
     @GetMapping
-    public List<User> findMutualFriends(@PathVariable int id, @PathVariable int otherId) throws Exception {
+    public List<User> findMutualFriends(@PathVariable int id, @PathVariable int otherId) throws NotFoundException {
         log.info("Получен запрос GET /users{id}/friends/common/{otherId}.");
 
         return userService.getMutualFriends(id, otherId);

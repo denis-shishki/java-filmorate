@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -11,7 +11,7 @@ public interface UserStorage {
 
     public User createUser(User user) throws ValidationException;
 
-    public User updateUser(User user) throws ValidationException, UserNotFoundException;
+    public User updateUser(User user) throws ValidationException, NotFoundException;
 
     public User getUserById(int id);
 }

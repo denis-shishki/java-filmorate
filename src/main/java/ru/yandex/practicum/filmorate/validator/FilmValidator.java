@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.validator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.IncorrectCountException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -34,11 +34,11 @@ public class FilmValidator {
         }
     }
 
-    public static void checkCorrectVariableIdFilm(FilmStorage filmStorage, int id) throws FilmNotFoundException {
+    public static void checkCorrectVariableIdFilm(FilmStorage filmStorage, int id) throws NotFoundException {
         if (id <= 0) {
             throw new IncorrectCountException("Id фильма не может быть 0 или меньше");
         } else if (filmStorage.getFilmById(id) == null) {
-            throw new FilmNotFoundException("Фильм с таким id не найден");
+            throw new NotFoundException("Фильм с таким id не найден");
         }
     }
 }

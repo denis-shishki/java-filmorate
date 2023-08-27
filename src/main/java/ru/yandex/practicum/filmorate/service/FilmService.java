@@ -2,8 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
@@ -27,7 +26,7 @@ public class FilmService {
         this.userStorage = inMemoryUserStorage;
     }
 
-    public Film likeFilm(int idFilm, int idUser) throws FilmNotFoundException, UserNotFoundException {
+    public Film likeFilm(int idFilm, int idUser) throws NotFoundException {
         FilmValidator.checkCorrectVariableIdFilm(filmStorage, idFilm);
         UserValidator.checkCorrectVariableIdUser(userStorage, idUser);
 
@@ -38,7 +37,7 @@ public class FilmService {
         return film;
     }
 
-    public Film getFilmById(int id) throws FilmNotFoundException {
+    public Film getFilmById(int id) throws NotFoundException {
         FilmValidator.checkCorrectVariableIdFilm(filmStorage, id);
         return filmStorage.getFilmById(id);
     }
@@ -55,7 +54,7 @@ public class FilmService {
     }
 
     public List<Film> findPopularFilms(int count) {
-        List<Film> films = filmStorage.findAllFilms();
+        List<Film> films = filmStorage.getAllFilm();
         return films.stream()
                 .sorted(Comparator.comparing(Film::getNumberOfLikes, Comparator.reverseOrder()))
                 .limit(count)

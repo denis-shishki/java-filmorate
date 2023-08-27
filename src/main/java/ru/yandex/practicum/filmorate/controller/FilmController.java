@@ -1,9 +1,8 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.IncorrectCountException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -19,7 +18,6 @@ public class FilmController {
     private final FilmStorage filmStorage;
     private final FilmService filmService;
 
-    @Autowired
     public FilmController(FilmStorage filmStorage, FilmService filmService) {
         this.filmStorage = filmStorage;
         this.filmService = filmService;
@@ -28,12 +26,12 @@ public class FilmController {
     @GetMapping()
     public List<Film> findAllFilms() {
         log.info("Получен запрос GET /films.");
-        return filmStorage.findAllFilms();
+        return filmStorage.getAllFilm();
     }
 
 
     @GetMapping("{id}")
-    public Film findFilmById(@PathVariable int id) throws FilmNotFoundException {
+    public Film findFilmById(@PathVariable int id) throws NotFoundException {
         log.info("Получен запрос GET /films/{id}.");
         return filmService.getFilmById(id);
     }

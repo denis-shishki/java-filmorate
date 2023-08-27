@@ -3,13 +3,14 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.Builder;
 import lombok.Data;
 
+
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
 public class User {
-    protected HashSet<Integer> friendsId;
+    protected Set<Integer> friendsId;
     protected final int id;
     protected final String email;
     protected final String login;

@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.IncorrectCountException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -32,11 +32,11 @@ public class UserValidator {
         }
     }
 
-    public static void checkCorrectVariableIdUser(UserStorage userStorage, int userId) throws UserNotFoundException {
+    public static void checkCorrectVariableIdUser(UserStorage userStorage, int userId) throws NotFoundException {
         if (userId <= 0) {
             throw new IncorrectCountException("Id пользователя не может быть 0 или меньше");
         } else if (userStorage.getUserById(userId) == null) {
-            throw new UserNotFoundException("Пользователь с таким id не найден");
+            throw new NotFoundException("Пользователь с таким id не найден");
         }
     }
 }
