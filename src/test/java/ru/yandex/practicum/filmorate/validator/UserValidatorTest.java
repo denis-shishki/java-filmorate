@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserValidatorTest {
-    UserValidator userValidator = new UserValidator();
 
     @Test
     void userTry() {
@@ -19,7 +18,7 @@ class UserValidatorTest {
                 .email("mail@mail.ru")
                 .birthday(LocalDate.of(1946, 8, 20))
                 .build();
-        assertDoesNotThrow(() -> userValidator.validate(user));
+        assertDoesNotThrow(() -> UserValidator.validate(user));
     }
 
     @Test
@@ -30,7 +29,7 @@ class UserValidatorTest {
                 .email("mail@mail.ru")
                 .birthday(LocalDate.of(1946, 8, 20))
                 .build();
-        ValidationException exception = assertThrows(ValidationException.class, () -> userValidator.validate(user));
+        ValidationException exception = assertThrows(ValidationException.class, () -> UserValidator.validate(user));
         assertEquals("Логин не может быть пустым и содержать пробелов.", exception.getMessage());
     }
 
@@ -42,7 +41,7 @@ class UserValidatorTest {
                 .email("maiil.ru")
                 .birthday(LocalDate.of(1946, 8, 20))
                 .build();
-        ValidationException exception = assertThrows(ValidationException.class, () -> userValidator.validate(user));
+        ValidationException exception = assertThrows(ValidationException.class, () -> UserValidator.validate(user));
         assertEquals("Введен некорректный email.", exception.getMessage());
     }
 
@@ -54,7 +53,7 @@ class UserValidatorTest {
                 .email("mail@mail.ru")
                 .birthday(LocalDate.of(3946, 8, 20))
                 .build();
-        ValidationException exception = assertThrows(ValidationException.class, () -> userValidator.validate(user));
+        ValidationException exception = assertThrows(ValidationException.class, () -> UserValidator.validate(user));
         assertEquals("Дата рождения не может быть в будущем.", exception.getMessage());
     }
 
@@ -65,7 +64,7 @@ class UserValidatorTest {
                 .email("mail@mail.ru")
                 .birthday(LocalDate.of(1946, 8, 20))
                 .build();
-        assertDoesNotThrow(() -> userValidator.validate(user));
+        assertDoesNotThrow(() -> UserValidator.validate(user));
         assertEquals("dolore", user.getName());
     }
 }

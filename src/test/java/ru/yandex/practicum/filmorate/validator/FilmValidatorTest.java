@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmValidatorTest {
-    FilmValidator filmValidator = new FilmValidator();
 
     @Test
     void filmTry() {
@@ -19,7 +18,7 @@ class FilmValidatorTest {
                 .releaseDate(LocalDate.of(1967, 3, 25))
                 .duration(100)
                 .build();
-        assertDoesNotThrow(() -> filmValidator.validate(film));
+        assertDoesNotThrow(() -> FilmValidator.validate(film));
     }
 
     @Test
@@ -29,7 +28,7 @@ class FilmValidatorTest {
                 .releaseDate(LocalDate.of(1967, 3, 25))
                 .duration(100)
                 .build();
-        ValidationException exception = assertThrows(ValidationException.class, () -> filmValidator.validate(film));
+        ValidationException exception = assertThrows(ValidationException.class, () -> FilmValidator.validate(film));
         assertEquals("Имя не может быть пустым.", exception.getMessage());
     }
 
@@ -41,8 +40,8 @@ class FilmValidatorTest {
                 .releaseDate(LocalDate.of(1967, 3, 25))
                 .duration(100)
                 .build();
-        ValidationException exception = assertThrows(ValidationException.class, () -> filmValidator.validate(film));
-        assertEquals("Описание не должн превышать 200 символов.", exception.getMessage());
+        ValidationException exception = assertThrows(ValidationException.class, () -> FilmValidator.validate(film));
+        assertEquals("Описание не должно превышать 200 символов.", exception.getMessage());
     }
 
     @Test
@@ -53,7 +52,7 @@ class FilmValidatorTest {
                 .releaseDate(LocalDate.of(1567, 3, 25))
                 .duration(100)
                 .build();
-        ValidationException exception = assertThrows(ValidationException.class, () -> filmValidator.validate(film));
+        ValidationException exception = assertThrows(ValidationException.class, () -> FilmValidator.validate(film));
         assertEquals("Дата релиза не может быть раньше 28-12-1895.", exception.getMessage());
     }
 
@@ -65,7 +64,7 @@ class FilmValidatorTest {
                 .releaseDate(LocalDate.of(1967, 3, 25))
                 .duration(-100)
                 .build();
-        ValidationException exception = assertThrows(ValidationException.class, () -> filmValidator.validate(film));
+        ValidationException exception = assertThrows(ValidationException.class, () -> FilmValidator.validate(film));
         assertEquals("Длительность не может быть отрицательной", exception.getMessage());
 
     }

@@ -2,52 +2,77 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.validator.UserValidator;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
 @RestController()
 @RequestMapping("/users")
 public class UserController {
-    private final HashMap<Integer, User> users = new HashMap<>();
-    private int nextId = 1;
+    private final UserStorage userStorage;
+    private final UserService userService;
+
+    public UserController(UserStorage userStorage, UserService userService) {
+        this.userStorage = userStorage;
+        this.userService = userService;
+    }
 
     @GetMapping()
     public List<User> findAllUsers() {
         log.info("Получен запрос GET /users.");
-        return new ArrayList<>(users.values());
+        return userStorage.findAllUsers();
+    }
+
+    @GetMapping("{id}")
+    public User findUserById(@PathVariable int id) throws NotFoundException {
+        log.info("Получен запрос GET /users/{id}.");
+        return userService.getUserById(id);
     }
 
     @PostMapping()
-    public User createUser(@RequestBody User user) throws ValidationException /*throws UserAlreadyExistException, InvalidEmailException*/ {
+    public User createUser(@RequestBody User user) throws ValidationException {
         log.info("Получен запрос POST /users.");
-        UserValidator.validate(user);
-        User newUser = User.builder()
-                .id(nextId++)
-                .email(user.getEmail())
-                .login(user.getLogin())
-                .name(user.getName())
-                .birthday(user.getBirthday())
-                .build();
-        users.put(newUser.getId(), newUser);
-        return newUser;
+        return userStorage.createUser(user);
     }
 
     @PutMapping
     public User updateUser(@RequestBody User user) throws Exception {
         log.info("Получен запрос PUT /users.");
-        if (users.containsKey(user.getId())) {
-            UserValidator.validate(user);
-            users.put(user.getId(), user);
-            return user;
-        } else {
-            throw new UserNotFoundException("Пользователь с таким идентификатором не найден.");
-        }
+        return userStorage.updateUser(user);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public User addFriend(@PathVariable int id, @PathVariable int friendId) throws NotFoundException {
+        log.info("Получен запрос PUT /users{id}/friends/{friendId}.");
+
+        return userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public User deleteFriend(@PathVariable int id, @PathVariable int friendId) throws NotFoundException {
+        log.info("Получен запрос DELETE /users{id}/friends/{friendId}.");
+
+        return userService.deleteFriend(id, friendId);
+    }
+
+    @RequestMapping("{id}/friends")
+    @GetMapping
+    public List<User> findFriends(@PathVariable int id) throws NotFoundException {
+        log.info("Получен запрос GET /users{id}/friends.");
+
+        return userService.getAllFriends(id);
+    }
+
+    @RequestMapping("{id}/friends/common/{otherId}")
+    @GetMapping
+    public List<User> findMutualFriends(@PathVariable int id, @PathVariable int otherId) throws NotFoundException {
+        log.info("Получен запрос GET /users{id}/friends/common/{otherId}.");
+
+        return userService.getMutualFriends(id, otherId);
     }
 }
