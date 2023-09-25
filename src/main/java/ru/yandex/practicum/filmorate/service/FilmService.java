@@ -2,39 +2,37 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.FilmDao;
+import ru.yandex.practicum.filmorate.dao.UserDao;
+import ru.yandex.practicum.filmorate.exception.IncorrectCountException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.validator.FilmValidator;
 import ru.yandex.practicum.filmorate.validator.UserValidator;
 
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 public class FilmService {
 
-    private final InMemoryFilmStorage filmStorage;
-    private final InMemoryUserStorage userStorage;
+    private final FilmDao filmStorage;
+    private final UserDao userStorage;
 
     @Autowired
-    public FilmService(InMemoryFilmStorage inMemoryFilmStorage, InMemoryUserStorage inMemoryUserStorage) {
-        this.filmStorage = inMemoryFilmStorage;
-        this.userStorage = inMemoryUserStorage;
+    public FilmService(FilmDao filmStorage, UserDao userStorage) {
+        this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
     }
 
-    public Film likeFilm(int idFilm, int idUser) throws NotFoundException {
-        FilmValidator.checkCorrectVariableIdFilm(filmStorage, idFilm);
-        UserValidator.checkCorrectVariableIdUser(userStorage, idUser);
+    public void likeFilm(int filmId, int userId) throws NotFoundException {
+        FilmValidator.checkCorrectVariableIdFilm(filmStorage, filmId);
+        UserValidator.checkCorrectVariableIdUser(userStorage, userId);
 
-        Film film = filmStorage.getFilmById(idFilm);
-        User user = userStorage.getUserById(idUser);
-
-        film.addLike(user.getId());
-        return film;
+        filmStorage.addLike(filmId, userId);
     }
 
     public Film getFilmById(int id) throws NotFoundException {
@@ -42,22 +40,31 @@ public class FilmService {
         return filmStorage.getFilmById(id);
     }
 
-    public Film deleteLike(int idFilm, int idUser) throws Exception {
-        FilmValidator.checkCorrectVariableIdFilm(filmStorage, idFilm);
-        UserValidator.checkCorrectVariableIdUser(userStorage, idUser);
+    public void deleteLike(int filmId, int userId) throws Exception {
+        FilmValidator.checkCorrectVariableIdFilm(filmStorage, filmId);
+        UserValidator.checkCorrectVariableIdUser(userStorage, userId);
 
-        Film film = filmStorage.getFilmById(idFilm);
-        User user = userStorage.getUserById(idUser);
+        filmStorage.deleteLike(filmId, userId);
+    }
 
-        film.deleteLike(user.getId());
-        return film;
+    public List<Film> findAllFilms() {
+        return filmStorage.getAllFilm();
+    }
+
+    public Film createFilm(Film film) throws ValidationException {
+        FilmValidator.validate(film);
+        return filmStorage.createFilm(film);
+    }
+
+    public Film updateFilm(Film film) throws ValidationException, NotFoundException {
+        FilmValidator.validate(film);
+        FilmValidator.checkCorrectVariableIdFilm(filmStorage, film.getId());
+        return filmStorage.updateFilm(film);
     }
 
     public List<Film> findPopularFilms(int count) {
-        List<Film> films = filmStorage.getAllFilm();
-        return films.stream()
-                .sorted(Comparator.comparing(Film::getNumberOfLikes, Comparator.reverseOrder()))
-                .limit(count)
-                .collect(Collectors.toList());
+        if (count <= 0) throw new IncorrectCountException("Значение count не может быть 0 или меньше");
+
+        return filmStorage.getSortFilmIdsByLikes(count);
     }
 }

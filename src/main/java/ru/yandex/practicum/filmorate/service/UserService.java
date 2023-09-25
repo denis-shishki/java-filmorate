@@ -3,74 +3,55 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.dao.UserDao;
 import ru.yandex.practicum.filmorate.validator.UserValidator;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class UserService {
 
-    private final InMemoryUserStorage userStorage;
+
+    private final UserDao userStorage;
 
     @Autowired
-    public UserService(InMemoryUserStorage inMemoryUserStorage) {
-        this.userStorage = inMemoryUserStorage;
+    public UserService(UserDao userStorage) {
+        this.userStorage = userStorage;
     }
 
-    public User addFriend(int idUser, int idFriend) throws NotFoundException {
-        UserValidator.checkCorrectVariableIdUser(userStorage, idUser);
-        UserValidator.checkCorrectVariableIdUser(userStorage, idFriend);
-
-        User user = userStorage.getUserById(idUser);
-        User friend = userStorage.getUserById(idFriend);
-
-        user.addIdFriend(idFriend);
-        friend.addIdFriend(idUser);
-        return user;
+    public void addFriend(int userId, int friendId) throws NotFoundException {
+        UserValidator.checkCorrectVariableIdUser(userStorage, userId);
+        UserValidator.checkCorrectVariableIdUser(userStorage, friendId);
+        
+        userStorage.addFriend(userId, friendId);
     }
 
-    public User deleteFriend(int idUser, int idFriend) throws NotFoundException {
-        UserValidator.checkCorrectVariableIdUser(userStorage, idUser);
-        UserValidator.checkCorrectVariableIdUser(userStorage, idFriend);
+    public void deleteFriend(int userId, int friendId) throws NotFoundException { //а как понять, где чья дружба
+        UserValidator.checkCorrectVariableIdUser(userStorage, userId);
+        UserValidator.checkCorrectVariableIdUser(userStorage, friendId);
 
-        User user = userStorage.getUserById(idUser);
-        User friend = userStorage.getUserById(idFriend);
-
-        user.deleteFriend(idFriend);
-        friend.deleteFriend(idUser);
-        return user;
+        userStorage.deleteFriend(userId, friendId);
     }
 
-    public List<User> getAllFriends(int idUser) throws NotFoundException {
-        UserValidator.checkCorrectVariableIdUser(userStorage, idUser);
-        User user = userStorage.getUserById(idUser);
-        HashSet<Integer> friendsId = (HashSet<Integer>) user.getFriendsId();
-        List<User> friends = new ArrayList<>();
-        for (Integer id : friendsId) {
-            friends.add(userStorage.getUserById(id));
-        }
-        return friends;
+    public List<User> getAllFriends(int userId) throws NotFoundException { //может вернуть оптионал и проверить?
+        UserValidator.checkCorrectVariableIdUser(userStorage, userId);
+        return userStorage.findFriendsByUserId(userId);
     }
 
-    public List<User> getMutualFriends(int idUser, int idFriend) throws NotFoundException {
-        UserValidator.checkCorrectVariableIdUser(userStorage, idUser);
-        UserValidator.checkCorrectVariableIdUser(userStorage, idFriend);
+    public List<User> getMutualFriends(int userId, int otherId) throws NotFoundException { //общие друзья
+        UserValidator.checkCorrectVariableIdUser(userStorage, userId);
+        UserValidator.checkCorrectVariableIdUser(userStorage, otherId);
 
-        User user = userStorage.getUserById(idUser);
-        User other = userStorage.getUserById(idFriend);
-
-        Set<Integer> friendsIdsByUser = user.getFriendsId();
-        Set<Integer> friendsIdsByOther = other.getFriendsId();
+        List<User> friendsIdsByUser = userStorage.findFriendsByUserId(userId);
+        List<User> friendsIdsByOther = userStorage.findFriendsByUserId(otherId);
         List<User> mutualFriends = new ArrayList<>();
 
-        for (Integer id : friendsIdsByUser) {
-            if (friendsIdsByOther.contains(id)) {
-                mutualFriends.add(userStorage.getUserById(id));
+        for (User user : friendsIdsByUser) {
+            if (friendsIdsByOther.contains(user)) {
+                mutualFriends.add(user);
             }
         }
         return mutualFriends;
@@ -79,5 +60,20 @@ public class UserService {
     public User getUserById(int id) throws NotFoundException {
         UserValidator.checkCorrectVariableIdUser(userStorage, id);
         return userStorage.getUserById(id);
+    }
+
+    public List<User> findAllUsers() throws NotFoundException { //может вернуть оптионал и проверить?
+        return userStorage.findAllUsers();
+    }
+
+    public User createUser(User user) throws ValidationException {
+        UserValidator.validate(user);
+        return userStorage.createUser(user);
+    }
+
+    public User updateUser(User user) throws ValidationException, NotFoundException {
+        UserValidator.validate(user);
+        UserValidator.checkCorrectVariableIdUser(userStorage, user.getId());
+        return userStorage.updateUser(user);
     }
 }

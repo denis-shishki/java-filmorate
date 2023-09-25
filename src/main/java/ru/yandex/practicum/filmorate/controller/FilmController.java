@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.IncorrectCountException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.dao.FilmDao;
 
 import java.util.List;
 
@@ -15,18 +15,16 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
-    private final FilmStorage filmStorage;
     private final FilmService filmService;
 
-    public FilmController(FilmStorage filmStorage, FilmService filmService) {
-        this.filmStorage = filmStorage;
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
 
     @GetMapping()
     public List<Film> findAllFilms() {
         log.info("Получен запрос GET /films.");
-        return filmStorage.getAllFilm();
+        return filmService.findAllFilms();
     }
 
 
@@ -39,36 +37,31 @@ public class FilmController {
     @PostMapping
     public Film createFilm(@RequestBody Film film) throws Exception {
         log.info("Получен запрос POST /films.");
-        return filmStorage.createFilm(film);
+        return filmService.createFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@RequestBody Film film) throws Exception {
         log.info("Получен запрос PUT /films.");
-        return filmStorage.updateFilm(film);
+        return filmService.updateFilm(film);
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public Film likeFilm(@PathVariable int id, @PathVariable int userId) throws Exception {
+    public void likeFilm(@PathVariable int id, @PathVariable int userId) throws Exception {
         log.info("Получен запрос PUT /films/{id}/like/{userId}.");
-        return filmService.likeFilm(id, userId);
+        filmService.likeFilm(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public Film deleteLike(@PathVariable int id, @PathVariable int userId) throws Exception {
+    public void deleteLike(@PathVariable int id, @PathVariable int userId) throws Exception {
         log.info("Получен запрос DELETE /films/{id}/like/{userId}.");
-
-        return filmService.deleteLike(id, userId);
+        filmService.deleteLike(id, userId);
     }
 
     @RequestMapping("/popular")
     @GetMapping
     public List<Film> findPopularFilms(@RequestParam(defaultValue = "10") int count) throws IncorrectCountException {
         log.info("Получен запрос GET /films/popular.");
-
-        if (count <= 0) {
-            throw new IncorrectCountException("Значение count не может быть 0 или меньше");
-        }
         return filmService.findPopularFilms(count);
     }
 }

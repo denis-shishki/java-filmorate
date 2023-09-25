@@ -10,18 +10,18 @@ import java.util.Set;
 @Data
 @Builder
 public class User {
-    protected Set<Integer> friendsId;
-    protected final int id;
+    //protected Set<Integer> friendsId;
+    protected int id;
     protected final String email;
     protected final String login;
     protected String name;
     protected final LocalDate birthday;
 
-    public void addIdFriend(int id) {
-        friendsId.add(id);
-    }
-
-    public void deleteFriend(int id) {
-        friendsId.remove(id);
-    }
+//    public void addIdFriend(int id) {
+//        friendsId.add(id);
+//    }
+//
+//    public void deleteFriend(int id) {
+//        friendsId.remove(id);
+//    }
 }

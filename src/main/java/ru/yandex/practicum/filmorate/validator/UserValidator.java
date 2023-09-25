@@ -6,10 +6,9 @@ import ru.yandex.practicum.filmorate.exception.IncorrectCountException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.dao.UserDao;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 
 @Slf4j
 @Component
@@ -27,15 +26,13 @@ public class UserValidator {
         } else if (user.getBirthday().isAfter(LocalDate.now())) {
             log.warn("Некорректный ввод данных: Дата рождения не может быть в будущем.");
             throw new ValidationException("Дата рождения не может быть в будущем.");
-        } else if (user.getFriendsId() == null) {
-            user.setFriendsId(new HashSet<>());
         }
     }
 
-    public static void checkCorrectVariableIdUser(UserStorage userStorage, int userId) throws NotFoundException {
+    public static void checkCorrectVariableIdUser(UserDao userDao, int userId) throws NotFoundException {
         if (userId <= 0) {
             throw new IncorrectCountException("Id пользователя не может быть 0 или меньше");
-        } else if (userStorage.getUserById(userId) == null) {
+        } else if (!userDao.existsUserById(userId)) {
             throw new NotFoundException("Пользователь с таким id не найден");
         }
     }
