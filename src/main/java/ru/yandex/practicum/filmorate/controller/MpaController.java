@@ -19,7 +19,7 @@ public class MpaController {
     }
 
     @GetMapping()
-    public List<Mpa> findAllMpa() throws NotFoundException {
+    public List<Mpa> findAllMpa() {
         log.info("Получен запрос GET /mpa.");
         return mpaService.findAllMpa();
     }

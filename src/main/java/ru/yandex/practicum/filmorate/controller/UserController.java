@@ -20,7 +20,7 @@ public class UserController {
     }
 
     @GetMapping()
-    public List<User> findAllUsers() throws NotFoundException {
+    public List<User> findAllUsers() {
         log.info("Получен запрос GET /users.");
         return userService.findAllUsers();
     }

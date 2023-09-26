@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.dao.MpaDao;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -20,7 +18,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Component
 public class FilmDbStorage implements FilmDao {
@@ -41,7 +38,7 @@ public class FilmDbStorage implements FilmDao {
     }
 
     @Override
-    public Film createFilm(Film film) throws ValidationException {
+    public Film createFilm(Film film) {
         String sqlQuery = "insert into films (name, description, release_date, duration, mpa_id) " +
                 "values (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -62,7 +59,7 @@ public class FilmDbStorage implements FilmDao {
         List<Genre> genres = film.getGenres();
         if (genres != null) {
 
-            List<Genre> uniqueGenres = new ArrayList<>(); //убираем дублирование жанров
+            List<Genre> uniqueGenres = new ArrayList<>();
             for (Genre genre : genres) {
                 if (!uniqueGenres.contains(genre)) {
                     uniqueGenres.add(genre);
@@ -78,7 +75,7 @@ public class FilmDbStorage implements FilmDao {
     }
 
     @Override
-    public Film updateFilm(Film film) throws ValidationException, NotFoundException {
+    public Film updateFilm(Film film) {
         String sqlQuery = "update films set name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ?" +
                 " where film_id = ?";
         jdbcTemplate.update(sqlQuery,
@@ -91,12 +88,11 @@ public class FilmDbStorage implements FilmDao {
         );
 
         deleteAllGenreByFilmId(film.getId());
-        // тут удаляем все жанры с этим айдишником этого фильма
 
         List<Genre> genres = film.getGenres();
         if (genres != null) {
 
-            List<Genre> uniqueGenres = new ArrayList<>(); //убираем дублирование жанров
+            List<Genre> uniqueGenres = new ArrayList<>();
             for (Genre genre : genres) {
                 if (!uniqueGenres.contains(genre)) {
                     uniqueGenres.add(genre);
@@ -117,6 +113,7 @@ public class FilmDbStorage implements FilmDao {
         String sqlQuery = "delete from films_genre where film_id = ?";
         jdbcTemplate.update(sqlQuery, id);
     }
+
     @Override
     public void addLike(int filmId, int userId) {
         String sqlQuery = "insert into likes_list (film_id, user_id) values (?, ?)";
@@ -124,24 +121,13 @@ public class FilmDbStorage implements FilmDao {
     }
 
     @Override
-    public int getNumberOfLikes(int filmId) {
-        String sqlQuery = "select count(*) from likes_list where film_id = ?";
-        Integer number = jdbcTemplate.queryForObject(sqlQuery, Integer.class, filmId);
-        if (number != null){
-            return number;
-        } else {
-            return 0;
-        }
-    }
-
-    @Override
     public List<Film> getSortFilmIdsByLikes(int count) {
         String sqlQuery = "SELECT f.* " +
-                          "FROM films f " +
-                          "LEFT JOIN likes_list l ON f.film_id=l.film_id " +
-                          "GROUP BY f.film_id " +
-                          "ORDER BY COUNT(l.user_id) DESC " +
-                          "LIMIT ?";
+                "FROM films f " +
+                "LEFT JOIN likes_list l ON f.film_id=l.film_id " +
+                "GROUP BY f.film_id " +
+                "ORDER BY COUNT(l.user_id) DESC " +
+                "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
     }
 
@@ -175,7 +161,7 @@ public class FilmDbStorage implements FilmDao {
     public boolean existsFilmById(int filmId) {
         String sql = "select count(*) from films where film_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, filmId);
-        if (count == null){
+        if (count == null) {
             return false;
         }
         return count > 0;

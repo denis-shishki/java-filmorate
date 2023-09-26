@@ -5,8 +5,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.UserDao;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.Date;
@@ -31,7 +29,7 @@ public class UserDbStorage implements UserDao {
     }
 
     @Override
-    public User createUser(User user) throws ValidationException {
+    public User createUser(User user) {
         String sqlQuery = "insert into users (name, login, email, birthday)" +
                 "values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -51,7 +49,7 @@ public class UserDbStorage implements UserDao {
     }
 
     @Override
-    public User updateUser(User user) throws ValidationException, NotFoundException {
+    public User updateUser(User user) {
         String sqlQuery = "update users set name = ?, login = ?, email = ?, birthday = ?" +
                 " where user_id = ?";
         jdbcTemplate.update(sqlQuery,
@@ -78,19 +76,19 @@ public class UserDbStorage implements UserDao {
     }
 
     @Override
-    public void addFriend(int userId, int friendId) { // пока точно не знаю как обработать взаимное добавление в друзья
+    public void addFriend(int userId, int friendId) {
         String sqlQuery = "insert into friends_list (user_id, friend_id, confirmation)" +
                 "values (?, ?, 'f')";
-        jdbcTemplate.update(sqlQuery, userId,friendId);
+        jdbcTemplate.update(sqlQuery, userId, friendId);
     }
 
     @Override
     public void deleteFriend(int userId, int friendId) {
         String sqlQuery = "DELETE FROM friends_list WHERE user_id = ? AND friend_id = ?";
-        jdbcTemplate.update(sqlQuery, userId,friendId);
+        jdbcTemplate.update(sqlQuery, userId, friendId);
     }
 
-    public User mapRowToUser(ResultSet rs, int rowNum) throws SQLException {
+    protected User mapRowToUser(ResultSet rs, int rowNum) throws SQLException {
         return User.builder()
                 .id(rs.getInt("user_id"))
                 .name(rs.getString("name"))
@@ -104,7 +102,7 @@ public class UserDbStorage implements UserDao {
     public boolean existsUserById(int userId) {
         String sql = "select count(*) from users where user_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, userId);
-        if (count == null){
+        if (count == null) {
             return false;
         }
         return count > 0;

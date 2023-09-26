@@ -24,7 +24,7 @@ public class GenreDaoImpl implements GenreDao {
     }
 
     @Override
-    public void createConnectionGenreWithFilm(int filmId, int genreId){
+    public void createConnectionGenreWithFilm(int filmId, int genreId) {
         String sqlQuery = "insert into films_genre (film_id, genre_id) " +
                 "values (?, ?)";
         jdbcTemplate.update(sqlQuery, filmId, genreId);
@@ -33,20 +33,20 @@ public class GenreDaoImpl implements GenreDao {
     @Override
     public List<Genre> findAllGenres() {
         String sqlQuery = "select * from genre";
-        return jdbcTemplate.query(sqlQuery,this::mapRowToGenre);
+        return jdbcTemplate.query(sqlQuery, this::mapRowToGenre);
     }
 
     @Override
-    public List<Genre> findGenresByPostId(int id){
+    public List<Genre> findGenresByPostId(int id) {
         String sqlQuery = "select * from genre where genre_id in (select genre_id from films_genre where film_id = ?)";
-        return jdbcTemplate.query(sqlQuery,this::mapRowToGenre, id);
+        return jdbcTemplate.query(sqlQuery, this::mapRowToGenre, id);
     }
 
     @Override
     public boolean existsGenreById(int id) {
         String sql = "select count(*) from genre where genre_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
-        if (count == null){
+        if (count == null) {
             return false;
         }
         return count > 0;

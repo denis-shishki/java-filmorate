@@ -33,7 +33,7 @@ public class MpaDaoImpl implements MpaDao {
     public boolean existsMpaById(int id) {
         String sql = "select count(*) from mpa where mpa_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
-        if (count == null){
+        if (count == null) {
             return false;
         }
         return count > 0;

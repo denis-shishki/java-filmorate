@@ -22,7 +22,7 @@ public class GenreController {
     }
 
     @GetMapping()
-    public List<Genre> findAllMpa() throws NotFoundException {
+    public List<Genre> findAllMpa() {
         log.info("Получен запрос GET /genres.");
         return genreService.findAllGenre();
     }

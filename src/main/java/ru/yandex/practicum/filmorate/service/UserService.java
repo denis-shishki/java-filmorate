@@ -14,7 +14,6 @@ import java.util.List;
 @Service
 public class UserService {
 
-
     private final UserDao userStorage;
 
     @Autowired
@@ -25,23 +24,23 @@ public class UserService {
     public void addFriend(int userId, int friendId) throws NotFoundException {
         UserValidator.checkCorrectVariableIdUser(userStorage, userId);
         UserValidator.checkCorrectVariableIdUser(userStorage, friendId);
-        
+
         userStorage.addFriend(userId, friendId);
     }
 
-    public void deleteFriend(int userId, int friendId) throws NotFoundException { //а как понять, где чья дружба
+    public void deleteFriend(int userId, int friendId) throws NotFoundException {
         UserValidator.checkCorrectVariableIdUser(userStorage, userId);
         UserValidator.checkCorrectVariableIdUser(userStorage, friendId);
 
         userStorage.deleteFriend(userId, friendId);
     }
 
-    public List<User> getAllFriends(int userId) throws NotFoundException { //может вернуть оптионал и проверить?
+    public List<User> getAllFriends(int userId) throws NotFoundException {
         UserValidator.checkCorrectVariableIdUser(userStorage, userId);
         return userStorage.findFriendsByUserId(userId);
     }
 
-    public List<User> getMutualFriends(int userId, int otherId) throws NotFoundException { //общие друзья
+    public List<User> getMutualFriends(int userId, int otherId) throws NotFoundException {
         UserValidator.checkCorrectVariableIdUser(userStorage, userId);
         UserValidator.checkCorrectVariableIdUser(userStorage, otherId);
 
@@ -62,7 +61,7 @@ public class UserService {
         return userStorage.getUserById(id);
     }
 
-    public List<User> findAllUsers() throws NotFoundException { //может вернуть оптионал и проверить?
+    public List<User> findAllUsers() {
         return userStorage.findAllUsers();
     }
 

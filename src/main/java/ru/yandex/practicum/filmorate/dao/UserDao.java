@@ -7,13 +7,13 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.List;
 
 public interface UserDao {
-    public List<User> findAllUsers();
+    List<User> findAllUsers();
 
-    public User createUser(User user) throws ValidationException;
+    User createUser(User user) throws ValidationException;
 
-    public User updateUser(User user) throws ValidationException, NotFoundException;
+    User updateUser(User user) throws ValidationException, NotFoundException;
 
-    public User getUserById(int id);
+    User getUserById(int id);
 
     List<User> findFriendsByUserId(int id);
 
