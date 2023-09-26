@@ -22,26 +22,29 @@ import static org.junit.jupiter.api.Assertions.*;
 class FilmorateApplicationTests {
     private final UserDbStorage userStorage;
 
+    static User user = User.builder()
+            .name("Имя")
+            .login("Логин")
+            .email("почта@точка.ру")
+            .birthday(LocalDate.ofEpochDay(2000 - 5 - 5))
+            .build();
+
+
     @Test
     public void testFindUserById() {
-
-        Optional<User> userOptional = Optional.ofNullable(userStorage.getUserById(1));
+        User newUser = userStorage.createUser(user);
+        int userId = newUser.getId();
+        Optional<User> userOptional = Optional.ofNullable(userStorage.getUserById(userId));
 
         assertThat(userOptional)
                 .isPresent()
                 .hasValueSatisfying(user ->
-                        assertThat(user).hasFieldOrPropertyWithValue("id", 1)
+                        assertThat(user).hasFieldOrPropertyWithValue("id", userId)
                 );
     }
 
     @Test
     public void testFindAllUsers() {
-        User user = User.builder()
-                .name("Имя")
-                .login("Логин")
-                .email("почта@точка.ру")
-                .birthday(LocalDate.ofEpochDay(2000 - 5 - 5))
-                .build();
         User userResponse = userStorage.createUser(user);
         int lustId = userResponse.getId();
 
@@ -51,46 +54,64 @@ class FilmorateApplicationTests {
 
     @Test
     public void testCreateUser() {
-        User user = User.builder()
-                .id(5)
-                .name("Имя")
-                .login("Логин")
-                .email("почта@точка.ру")
-                .birthday(LocalDate.ofEpochDay(2000 - 5 - 5))
+        User newUser = User.builder()
+                .name("newName")
+                .login("newЛогин")
+                .email("newпочта@точка.ру")
+                .birthday(LocalDate.ofEpochDay(1999 - 5 - 5))
                 .build();
-        User userResponse = userStorage.createUser(user);
-        assertEquals(user, userResponse, "Пользователь создан некорректно");
+        User userResponse = userStorage.createUser(newUser);
+        newUser.setId(userResponse.getId());
+        assertEquals(newUser, userResponse, "Пользователь создан некорректно");
     }
 
     @Test
     public void testUpdateUser() {
-        User user = User.builder()
-                .id(2)
-                .name("Имя")
-                .login("Логин")
-                .email("почта@точка.ру")
-                .birthday(LocalDate.ofEpochDay(2000 - 5 - 5))
+        User newUser = userStorage.createUser(user);
+        int userId = newUser.getId();
+
+        User updateUser = User.builder()
+                .id(userId)
+                .name("НовоеИмя")
+                .login("НовыйЛогин")
+                .email("новаяПочта@точка.ру")
+                .birthday(LocalDate.ofEpochDay(1900 - 5 - 5))
                 .build();
-        User userResponse = userStorage.updateUser(user);
-        assertEquals(user, userResponse, "Пользователь обновлен некорректно");
+        User userResponse = userStorage.updateUser(updateUser);
+        assertEquals(updateUser, userResponse, "Пользователь обновлен некорректно");
     }
 
     @Test
     public void testAddFriend() {
-        userStorage.addFriend(4, 1);
-        List<User> friends = userStorage.findFriendsByUserId(4);
+        User firstUser = userStorage.createUser(user);
+        User secondUser = userStorage.createUser(user);
+
+        int firstId = firstUser.getId();
+        int secondId = secondUser.getId();
+        userStorage.addFriend(firstId, secondId);
+        List<User> friends = userStorage.findFriendsByUserId(firstId);
         assertThat(friends).hasSize(1);
     }
 
     @Test
     public void testDeleteFriend() {
-        userStorage.deleteFriend(2, 1);
-        List<User> friends = userStorage.findFriendsByUserId(2);
+        User firstUser = userStorage.createUser(user);
+        User secondUser = userStorage.createUser(user);
+
+        int firstId = firstUser.getId();
+        int secondId = secondUser.getId();
+        userStorage.addFriend(firstId, secondId);
+        List<User> friends = userStorage.findFriendsByUserId(firstId);
         assertThat(friends).hasSize(1);
+
+        userStorage.deleteFriend(firstId, secondId);
+        List<User> updateFriends = userStorage.findFriendsByUserId(firstId);
+        assertThat(updateFriends).hasSize(0);
     }
 
     @Test
     public void testExistsUserById() {
+        userStorage.createUser(user);
         assertTrue(userStorage.existsUserById(1), "Метод не находит существующий id");
         assertFalse(userStorage.existsUserById(9999), "Метод находит несуществующий id");
     }
