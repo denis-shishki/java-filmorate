@@ -43,8 +43,8 @@ public class UserDbStorage implements UserDao {
             return ps;
         }, keyHolder);
 
-        int user_id = Objects.requireNonNull(keyHolder.getKey()).intValue();
-        user.setId(user_id);
+        int userId = Objects.requireNonNull(keyHolder.getKey()).intValue();
+        user.setId(userId);
         return user;
     }
 
