@@ -53,8 +53,8 @@ public class FilmDbStorage implements FilmDao {
             return ps;
         }, keyHolder);
 
-        int film_id = Objects.requireNonNull(keyHolder.getKey()).intValue();
-        film.setId(film_id);
+        int filmId = Objects.requireNonNull(keyHolder.getKey()).intValue();
+        film.setId(filmId);
 
         List<Genre> genres = film.getGenres();
         if (genres != null) {
@@ -68,7 +68,7 @@ public class FilmDbStorage implements FilmDao {
             film.setGenres(uniqueGenres);
             for (Genre genre : uniqueGenres) {
                 int genreId = genre.getId();
-                genreDao.createConnectionGenreWithFilm(film_id, genreId);
+                genreDao.createConnectionGenreWithFilm(filmId, genreId);
             }
         }
         return film;
