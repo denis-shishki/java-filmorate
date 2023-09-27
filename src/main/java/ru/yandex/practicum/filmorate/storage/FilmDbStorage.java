@@ -66,7 +66,7 @@ public class FilmDbStorage implements FilmDao {
                 }
             }
             film.setGenres(uniqueGenres);
-            genreDao.createConnectionGenreWithFilm(filmId, genres);
+            genreDao.createConnectionGenreWithFilm(filmId, uniqueGenres);
         }
         return film;
     }
@@ -96,7 +96,7 @@ public class FilmDbStorage implements FilmDao {
                 }
             }
             film.setGenres(uniqueGenres);
-            genreDao.createConnectionGenreWithFilm(film.getId(), genres);
+            genreDao.createConnectionGenreWithFilm(film.getId(), uniqueGenres);
         }
         return film;
     }
