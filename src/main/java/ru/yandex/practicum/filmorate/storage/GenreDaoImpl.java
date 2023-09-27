@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.model.Genre;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -28,6 +30,25 @@ public class GenreDaoImpl implements GenreDao {
         String sqlQuery = "insert into films_genre (film_id, genre_id) " +
                 "values (?, ?)";
         jdbcTemplate.update(sqlQuery, filmId, genreId);
+    }
+
+    @Override
+    public void createConnectionGenreWithFilm(int filmId, List<Genre> genres) {
+        String sqlQuery = "insert into films_genre (film_id, genre_id) " +
+                "values (?, ?)";
+
+        jdbcTemplate.batchUpdate(sqlQuery,
+                new BatchPreparedStatementSetter() {
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        Genre genre = genres.get(i);
+                        ps.setInt(1, filmId);
+                        ps.setInt(2, genre.getId());
+                    }
+
+                    public int getBatchSize() {
+                        return genres.size();
+                    }
+                });
     }
 
     @Override

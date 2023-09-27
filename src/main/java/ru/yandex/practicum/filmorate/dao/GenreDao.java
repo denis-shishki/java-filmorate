@@ -9,6 +9,8 @@ public interface GenreDao {
 
     void createConnectionGenreWithFilm(int filmId, int genreId);
 
+    void createConnectionGenreWithFilm(int filmId, List<Genre> genres);
+
     List<Genre> findAllGenres();
 
     List<Genre> findGenresByPostId(int id);

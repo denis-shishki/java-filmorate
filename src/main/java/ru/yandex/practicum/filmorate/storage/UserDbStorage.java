@@ -16,7 +16,7 @@ import java.util.Objects;
 
 @Component
 public class UserDbStorage implements UserDao {
-    protected JdbcTemplate jdbcTemplate;
+    protected final JdbcTemplate jdbcTemplate;
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

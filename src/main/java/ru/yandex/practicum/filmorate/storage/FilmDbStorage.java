@@ -21,9 +21,9 @@ import java.util.Objects;
 
 @Component
 public class FilmDbStorage implements FilmDao {
-    protected JdbcTemplate jdbcTemplate;
-    protected GenreDao genreDao;
-    protected MpaDao mpaDao;
+    protected final JdbcTemplate jdbcTemplate;
+    protected final GenreDao genreDao;
+    protected final MpaDao mpaDao;
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDao genreDao, MpaDao mpaDao) {
         this.jdbcTemplate = jdbcTemplate;
@@ -33,7 +33,7 @@ public class FilmDbStorage implements FilmDao {
 
     @Override
     public List<Film> getAllFilm() {
-        String sqlQuery = "select * from films";
+        String sqlQuery = "select f.*, m.* from films as f join mpa as m on f.mpa_id = m.mpa_id";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
     }
 
@@ -66,10 +66,7 @@ public class FilmDbStorage implements FilmDao {
                 }
             }
             film.setGenres(uniqueGenres);
-            for (Genre genre : uniqueGenres) {
-                int genreId = genre.getId();
-                genreDao.createConnectionGenreWithFilm(filmId, genreId);
-            }
+            genreDao.createConnectionGenreWithFilm(filmId, genres);
         }
         return film;
     }
@@ -99,11 +96,7 @@ public class FilmDbStorage implements FilmDao {
                 }
             }
             film.setGenres(uniqueGenres);
-
-            for (Genre genre : uniqueGenres) {
-                int genreId = genre.getId();
-                genreDao.createConnectionGenreWithFilm(film.getId(), genreId);
-            }
+            genreDao.createConnectionGenreWithFilm(film.getId(), genres);
         }
         return film;
     }
@@ -122,8 +115,9 @@ public class FilmDbStorage implements FilmDao {
 
     @Override
     public List<Film> getSortFilmIdsByLikes(int count) {
-        String sqlQuery = "SELECT f.* " +
+        String sqlQuery = "SELECT f.*, m.* " +
                 "FROM films f " +
+                "join mpa as m on f.mpa_id = m.mpa_id " +
                 "LEFT JOIN likes_list l ON f.film_id=l.film_id " +
                 "GROUP BY f.film_id " +
                 "ORDER BY COUNT(l.user_id) DESC " +
@@ -139,20 +133,22 @@ public class FilmDbStorage implements FilmDao {
 
     @Override
     public Film getFilmById(int id) {
-        String sqlQuery = "select * from films where film_id = ?";
+        String sqlQuery = "select f.*, m.* from films as f join mpa as m on f.mpa_id = m.mpa_id where film_id = ?";
         return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm, id);
     }
 
     private Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
         List<Genre> genres = genreDao.findGenresByPostId(rs.getInt("film_id"));
-        Mpa mpa = mpaDao.findMpaById(rs.getInt("mpa_id"));
         return Film.builder()
-                .id(rs.getInt("film_id"))
-                .duration(rs.getInt("duration"))
-                .releaseDate(rs.getDate("release_date").toLocalDate())
-                .description(rs.getString("description"))
-                .name(rs.getString("name"))
-                .mpa(mpa)
+                .id(rs.getInt("films.film_id"))
+                .duration(rs.getInt("films.duration"))
+                .releaseDate(rs.getDate("films.release_date").toLocalDate())
+                .description(rs.getString("films.description"))
+                .name(rs.getString("films.name"))
+                .mpa(Mpa.builder()
+                        .id(rs.getInt("mpa.mpa_id"))
+                        .name(rs.getString("mpa.name"))
+                        .build())
                 .genres(genres)
                 .build();
     }
