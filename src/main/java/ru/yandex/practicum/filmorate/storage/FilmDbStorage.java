@@ -137,6 +137,16 @@ public class FilmDbStorage implements FilmDao {
         return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm, id);
     }
 
+    @Override
+    public boolean existsFilmById(int filmId) {
+        String sql = "select count(*) from films where film_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, filmId);
+        if (count == null) {
+            return false;
+        }
+        return count > 0;
+    }
+
     private Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
         List<Genre> genres = genreDao.findGenresByPostId(rs.getInt("film_id"));
         return Film.builder()
@@ -151,15 +161,5 @@ public class FilmDbStorage implements FilmDao {
                         .build())
                 .genres(genres)
                 .build();
-    }
-
-    @Override
-    public boolean existsFilmById(int filmId) {
-        String sql = "select count(*) from films where film_id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, filmId);
-        if (count == null) {
-            return false;
-        }
-        return count > 0;
     }
 }
