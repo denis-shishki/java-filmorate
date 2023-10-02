@@ -6,10 +6,9 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.IncorrectCountException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.dao.FilmDao;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 
 @Slf4j
 @Component
@@ -29,15 +28,13 @@ public class FilmValidator {
         } else if (film.getDuration() < 0) {
             log.warn("Некорректный ввод данных: Длительность не может быть отрицательной");
             throw new ValidationException("Длительность не может быть отрицательной");
-        } else if (film.getIdsUsersLike() == null) {
-            film.setIdsUsersLike(new HashSet<>());
         }
     }
 
-    public static void checkCorrectVariableIdFilm(FilmStorage filmStorage, int id) throws NotFoundException {
+    public static void checkCorrectVariableIdFilm(FilmDao filmDao, int id) throws NotFoundException {
         if (id <= 0) {
             throw new IncorrectCountException("Id фильма не может быть 0 или меньше");
-        } else if (filmStorage.getFilmById(id) == null) {
+        } else if (!filmDao.existsFilmById(id)) {
             throw new NotFoundException("Фильм с таким id не найден");
         }
     }
